@@ -40,7 +40,8 @@ class MinStack: # idea that you only need the history of the smallest values
 	def pop(self):
 		if(len(self.stack) == 0): print "Stack is empty!"; return
 		value = self.stack.pop()
-		if(value == self.minArray[len(self.minArray)-1]): self.minArray.pop()
+		if(value == self.minArray[len(self.minArray)-1]): 
+			self.minArray.pop()
 		return value
 
 class SetOfStacks: # trick to use array of deques for pop_at()
@@ -85,16 +86,16 @@ def sort_stack(stack): # idea to use a temp variable and temp stack then reverse
 	if(len(stack) == 0): print "Error, empty stack!"; return
 	temp_stack, temp_val = [], 0 
 	temp_stack.append(stack.pop())
-	while(len(stack) != 0):
+	while stack:
 		if(stack[len(stack)-1] > temp_stack[len(temp_stack)-1]):
 			temp_stack.append(stack.pop())
 		else:
 			temp_val = stack.pop()
-			while(len(temp_stack) != 0 and temp_stack[len(temp_stack)-1] > temp_val):
+			while(temp_stack and temp_stack[len(temp_stack)-1] > temp_val):
 				stack.append(temp_stack.pop())
 			temp_stack.append(temp_val)
 			
-	while(len(temp_stack) != 0):
+	while temp_stack:
 		stack.append(temp_stack.pop())
 
 class Dog:
