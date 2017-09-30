@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<!-- saved from url=(0057)https://www.cs.hmc.edu/courses/2016/fall/cs42/hw/hw9.html -->
+<html lang="en-US" class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="generator" content="Madoko, version 1.0.3">
+  <meta name="viewport" content="initial-scale=1.0">
+  <title>CS 42—HW 9</title>
+  <link rel="stylesheet" type="text/css" href="./DP_homework_files/highlight.css" class="link">
+  <link rel="stylesheet" type="text/css" href="./DP_homework_files/normalize.css" class="link">
+  <link rel="stylesheet" type="text/css" href="./DP_homework_files/main.css" class="link">
+  <link rel="stylesheet" type="text/css" href="./DP_homework_files/assignment.css" class="link">
+  <script src="./DP_homework_files/modernizr-2.6.2.min.js" class="script"></script>
+  
+  </head>
+<body class="madoko">
+
+<div class="body madoko" style="line-adjust:0">
+
+<article id="assignment" class="article" data-line="22">
+
+<section id="toc" class="section" data-line="24">
+<h2 id="sec-hw9--string-theory-and-practice" class="h1" data-line="26" data-heading-depth="1" style="display:block"><span data-line="26"></span>HW9: String Theory and Practice</h2>
+<ul class="ul list-dash compact" data-line="27">
+<li class="li ul-li list-dash-li compact-li" data-line="27"><span data-line="27"></span><em class="em-low1">Due Thursday, November 17 at 11:59pm.</em><span data-line="27"></span>
+</li></ul></section>
+<section class="section" data-line="31"><h2 id="sec-overview" class="h1 title" data-line="32" data-heading-depth="1" style="display:block"><span data-line="32"></span>Overview</h2>
+<p class="p noindent" data-line="34"><span data-line="34"></span>In this assignment, we<span data-line="34"></span>'<span data-line="34"></span>ll implement several algorithms that operate over 
+strings. We<span data-line="35"></span>'<span data-line="35"></span>ll get to use many of the things we<span data-line="35"></span>'<span data-line="35"></span>ve learned this 
+semester<span data-line="36"></span>—<span data-line="36"></span>especially recursion and dynamic programming<span data-line="36"></span>—<span data-line="36"></span>all while
+investigating some cool applications of CS: DNA sequence alignment and 
+spell-checking.
+</p></section>
+<section id="style" class="section" data-line="42"><h2 id="sec-tests-and-style-guidelines" class="h1 title" data-line="43" data-heading-depth="1" style="display:block"><span data-line="43"></span>Tests and Style Guidelines</h2><h3 id="sec-tests" class="h2" data-line="45" data-heading-depth="2" style="display:block"><span data-line="45"></span>Tests</h3>
+<p class="p noindent" data-line="47"><span data-line="47"></span>You should write tests for your code, although you don<span data-line="47"></span>'<span data-line="47"></span>t need to turn in the
+tests.
+</p><h3 id="sec-style" class="h2" data-line="50" data-heading-depth="2" style="display:block"><span data-line="50"></span>Style</h3>
+<p class="p noindent" data-line="52"><span data-line="52"></span>As always, style and readability is an important part of your work. Your code
+should conform to the following style guidelines:
+</p>
+<ul class="ul list-dash compact" data-line="55">
+<li class="li ul-li list-dash-li compact-li" data-line="55"><span data-line="55"></span>Every function should have a docstring that explains the input(s), output(s),
+and basic behavior of the function.
+</li>
+<li class="li ul-li list-dash-li compact-li" data-line="57"><span data-line="57"></span>Your files should have no global variables, other than constants (as
+described below). 
+</li>
+<li class="li ul-li list-dash-li compact-li" data-line="59"><span data-line="59"></span>Your code should be well-commented, so that it<span data-line="59"></span>'<span data-line="59"></span>s easy to follow.
+</li></ul></section>
+<section id="part0" class="section" data-line="63"><h2 id="sec-part-0--dna-sequence-alignment" class="h1 title" data-line="64" data-heading-depth="1" style="display:block"><span data-line="64"></span>Part 0: DNA Sequence Alignment</h2>
+<p class="p noindent" data-line="66"><span data-line="66"></span>Groodies are a life form that was first discovered by Professor Bill Purves, who
+was the first department chair of the Harvey Mudd Department of Biology and
+Computer Science. (Yes, in the early days these two fields were in one
+department!) Prof. Purves is also one of the authors of the biology textbook for
+this course. Take a look at the still-mostly-there 
+<span data-line="71"></span><a href="https://web.archive.org/web/20151122202154/http://www2.hmc.edu/www_common/biology/florafauna/groodies.html" data-linkid="groodies">groovy Groody page</a><span data-line="71"></span>!
+</p>
+<p class="p indent" data-line="73"><span data-line="73"></span>It turns out, that there are two types of Groody, the Eastern Groody (Groodius
+Connecticuticus) and the Western Groody (Groodius Claremonticus). (Professor
+Purves taught at the University of Connecticut before coming to Harvey Mudd.)
+Both the Eastern and Western Groodies have a gene called the <span data-line="76"></span>“Schlitz Gene.”<span data-line="76"></span> The
+Eastern and Western Groody Schlitz genes are similar but not identical. Your job
+is to determine the degree of similarity in these two genes and the areas where
+the genes do and don<span data-line="79"></span>'<span data-line="79"></span>t agree.
+</p>
+<p class="p indent" data-line="81"><span data-line="81"></span>You<span data-line="81"></span>'<span data-line="81"></span>ll do this by using a form of a technique called <span data-line="81"></span>“global sequence
+alignment,”<span data-line="82"></span> one of the most important methods in computational biology.
+</p><h3 id="sec-a-reminder-of-lcs" class="h2" data-line="84" data-heading-depth="2" style="display:block"><span data-line="84"></span>A Reminder of LCS</h3>
+<p class="p noindent" data-line="86"><span data-line="86"></span>In class we discussed the longest common subsequence (LCS) problem. We also 
+sketched recursive (use-it-or-lose-it) and dynamic-programming solutions to the
+problem. Here is code that corresponds to the recursive solution:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-python lang-python python colorized" data-line="91" data-line-first="92" style="display:block"><code data-line="92"><span style="color:blue">def</span> lcs(s1, s2)<span style="color:blue">:</span>
+    <span style="color:maroon">'''</span>
+<span style="color:maroon">    Returns the length of the longest common subsequence of s1 and s2.</span>
+<span style="color:maroon">    </span><span style="color:maroon">'''</span>
+
+    <span style="color:darkgreen"># base case: the length of the LCS of an empty string and another string is 0</span>
+    <span style="color:blue">if</span> <span style="color:blue">not</span> s1 <span style="color:blue">or</span> <span style="color:blue">not</span> s2<span style="color:blue">:</span> 
+        <span style="color:blue">return</span> <span class="constant" style="color:purple">0</span>
+
+    <span style="color:darkgreen"># if the first characters of each string agree,  </span>
+    <span style="color:darkgreen"># count the character towards the LCS</span>
+    <span style="color:blue">if</span> s1[<span class="constant" style="color:purple">0</span>] == s2[<span class="constant" style="color:purple">0</span>]<span style="color:blue">:</span>             
+        useIt <span style="color:blue">=</span> <span class="constant" style="color:purple">1</span> + lcs(s1[<span class="constant" style="color:purple">1</span><span style="color:blue">:</span>], s2[<span class="constant" style="color:purple">1</span><span style="color:blue">:</span>]) 
+    <span style="color:blue">else</span><span style="color:blue">:</span>
+        useIt <span style="color:blue">=</span> <span class="constant" style="color:purple">0</span>
+
+    <span style="color:darkgreen"># make the problem smaller by peeling away the first character of s2 or </span>
+    <span style="color:darkgreen"># the first character of s1 and computing the resulting LCS; choose the </span>
+    <span style="color:darkgreen"># longer answer</span>
+    loseIt2 <span style="color:blue">=</span> lcs(s1[<span class="constant" style="color:purple">1</span><span style="color:blue">:</span>], s2)                        
+    loseIt1 <span style="color:blue">=</span> lcs(s1, s2[<span class="constant" style="color:purple">1</span><span style="color:blue">:</span>])
+
+    <span style="color:blue">return</span> max(useIt, loseIt1, loseIt2)</code></pre><h3 id="sec-global-sequence-alignment-part-1" class="h2" data-line="117" data-heading-depth="2" style="display:block"><span data-line="117"></span>Global Sequence Alignment, Part 1</h3>
+<p class="p noindent" data-line="119"><span data-line="119"></span>To accomplish your mission, you will write a version of the longest common
+subsequence (LCS) algorithm that we discussed in class. However, the class
+version only told us the length of the longest common subsequence. In this
+version, we<span data-line="122"></span>'<span data-line="122"></span>ll get the actual longest common subsequence.
+</p>
+<p class="p indent" data-line="124"><span data-line="124"></span><strong class="strong-star2">Create a file called <code class="code code1">sequencing.py</code>.</strong><span data-line="124"></span> Inside this file, define a function
+called <span data-line="125"></span><code class="code code1">lcs</code><span data-line="125"></span>. This function will be a modified version of the one that computes
+the length of the LCS (feel free to copy-paste that code and use it as a 
+starting point). Your new version of the <span data-line="127"></span><code class="code code1">lcs</code><span data-line="127"></span> must take two strings <span data-line="127"></span><code class="code code1">seq1</code><span data-line="127"></span> and
+<span data-line="128"></span><code class="code code1">seq2</code><span data-line="128"></span> as arguments and return a tuple with three items: A number indicating the 
+length of the longest common subsequence of these two strings, a copy of <span data-line="129"></span><code class="code code1">seq1</code><span data-line="129"></span>, 
+and a copy of <span data-line="130"></span><code class="code code1">seq2</code><span data-line="130"></span>. But in the copies, the symbols that are not used in the 
+longest common subsequence will be replaced by <span data-line="131"></span><code class="code code1">#</code><span data-line="131"></span> symbols.
+</p>
+<p class="p indent" data-line="133"><span data-line="133"></span>Here<span data-line="133"></span>'<span data-line="133"></span>s an example:
+</p>
+<pre class="para-block pre-fenced pre-fenced3" data-line="135" data-line-first="136" style="display:block"><code data-line="136">&gt;&gt;&gt; lcs("x", "y")
+(0, '#', '#')               &lt;-- the LCS has length 0. It uses neither "x" nor "y"
+&gt;&gt;&gt; lcs("spam", "")
+(0, '####', '')             &lt;-- the LCS has length 0. None of the letters in either string are used
+&gt;&gt;&gt; lcs("spa", "m")
+(0, "###", "#")             &lt;-- nothing is used in either string, so we stamp everything out!
+&gt;&gt;&gt; lcs("cat", "car")
+(2, "ca#, "ca#")            &lt;-- the "ca" is common but the "t" and "r" don't match
+&gt;&gt;&gt; lcs("cat", "lca")
+(2, "ca#", "#ca")           &lt;-- the "ca" is still the longest common part
+&gt;&gt;&gt; lcs("human", "chimpanzee")
+(4, 'h#man', '#h#m#an###')  &lt;-- "human" and "chimpanzee" have an LCS of length 4.  
+                                 The "u" in "human" is not used and many letters in "chimpanzee" 
+                                 are not used.</code></pre>
+<p class="p noindent para-continued" data-line="152"><span data-line="152"></span>Keep your <span data-line="152"></span><code class="code code1">lcs</code><span data-line="152"></span> function as simple possible, and do not have <span data-line="152"></span><code class="code code1">lcs</code><span data-line="152"></span> call any helper
+functions. Calling the built-in <span data-line="153"></span><code class="code code1">len</code><span data-line="153"></span> function is fine, but <span data-line="153"></span><code class="code code1">lcs</code><span data-line="153"></span> should not
+call the code in this document; this design would make it much more complicated
+than necessary. Instead, your <span data-line="155"></span><code class="code code1">lcs</code><span data-line="155"></span> should be a <span data-line="155"></span><em class="em-low1">modification</em><span data-line="155"></span> of the version
+in this document.
+</p><h3 id="sec-global-sequence-alignment-part-2" class="h2" data-line="158" data-heading-depth="2" style="display:block"><span data-line="158"></span>Global Sequence Alignment, Part 2</h3>
+<p class="p noindent" data-line="160"><span data-line="160"></span>Now, you<span data-line="160"></span>'<span data-line="160"></span>ll create another slightly different version of <span data-line="160"></span><code class="code code1">lcs</code><span data-line="160"></span>, called <span data-line="160"></span><code class="code code1">align</code><span data-line="160"></span>,
+to do sequence alignment. You can start by copying your <span data-line="161"></span><code class="code code1">lcs</code><span data-line="161"></span> and modifying it
+slightly. This function will again return a tuple of three items: the length of
+the longest common subsequence, and two strings. These two returned strings will
+be essentially identical to the two original strings except that they will both
+have the same length and will contain a <span data-line="165"></span><code class="code code1">-</code><span data-line="165"></span> (hyphen) symbol at any location
+where they mismatch.
+</p>
+<p class="p indent" data-line="168"><span data-line="168"></span>Here are some examples of <span data-line="168"></span><code class="code code1">align</code><span data-line="168"></span> in action:
+</p>
+<pre class="para-block pre-fenced pre-fenced3" data-line="170" data-line-first="171" style="display:block"><code data-line="171">&gt;&gt;&gt; align("x", "y")
+(0, 'x-', '-y')         &lt;-- The solution (0, '-x', 'y-') is also fine
+&gt;&gt;&gt; align("spam", "")   &lt;-- Take a close look here; this is a base case...
+(0, 'spam', '----')     &lt;-- ... notice that the second string is all ---- 
+                            so that it has the same length as the first
+&gt;&gt;&gt; align("cat", "car")
+(2, 'cat-', 'ca-r')     
+&gt;&gt;&gt; align("hi", "ship")
+(2, '-hi-', 'ship')</code></pre>
+<p class="p noindent para-continued" data-line="182"><span data-line="182"></span>Notice that the two output strings always have the same length! This allows us
+to write one on top of the other and see how they align.
+</p>
+<pre class="para-block pre-fenced pre-fenced3" data-line="185" data-line-first="186" style="display:block"><code data-line="186">-hi-
+ship</code></pre>
+<p class="p noindent para-continued" data-line="190"><span data-line="190"></span>Notice that a longest common subsequence is found wherever the two strings agree
+in the same position. If two strings disagree at a given position, exactly one
+of those strings has a <span data-line="192"></span><code class="code code1">-</code><span data-line="192"></span> in that position. Notice also that the entirety of the
+two supplied strings appears in the output, but with some added <span data-line="193"></span><code class="code code1">-</code><span data-line="193"></span> symbols where
+there is disagreement.
+</p>
+<p class="p indent" data-line="196"><span data-line="196"></span>Here is one more example using two DNA fragments:
+</p>
+<pre class="para-block pre-fenced pre-fenced3" data-line="198" data-line-first="199" style="display:block"><code data-line="199">&gt;&gt;&gt; align("ATTGC", "GATC")
+(3, '-ATTGC', 'GAT--C')
+Just to help see what's going on here, let's line these two output strings up one above the other:
+-ATTGC
+GAT--C</code></pre>
+<p class="p noindent para-continued" data-line="206"><span data-line="206"></span>You can see here that ATC is a longest common subsequence. In general, there may
+be several different equal-length longest common subsequences, which will result
+in several possible correct solutions. Your align function can report any single
+valid solution.
+</p><h3 id="sec-finally" class="h2" data-line="211" data-heading-depth="2" style="display:block"><span data-line="211"></span>Finally<span data-line="211"></span>…</h3>
+<p class="p noindent" data-line="213"><span data-line="213"></span>Your <span data-line="213"></span><code class="code code1">align</code><span data-line="213"></span> function is finding what<span data-line="213"></span>'<span data-line="213"></span>s called a <span data-line="213"></span>“global alignment”<span data-line="213"></span> of the two
+DNA strings. In the last example above, the solution
+</p>
+<pre class="para-block pre-fenced pre-fenced3" data-line="216" data-line-first="217" style="display:block"><code data-line="217">-ATTGC
+GAT--C</code></pre>
+<p class="p noindent para-continued" data-line="221"><span data-line="221"></span>indicates that these two DNA strings may have evolved from a common ancestor
+that had ATC at indices 1, 2, and 5 and other unknown nucleotides elsewhere. The
+two strings <span data-line="223"></span>“ATTGC”<span data-line="223"></span> and <span data-line="223"></span>“GATC”<span data-line="223"></span> may have evolved from this common ancestor but
+had some extra nucleotides inserted and others deleted. Finally, use your <span data-line="224"></span><code class="code code1">align</code><span data-line="224"></span>
+function to <span data-line="225"></span><code class="code code1">align</code><span data-line="225"></span> the Eastern and Western Groody Schlitz genes (called EGS and
+WGS) shown below (there are several equally valid solutions):
+</p>
+<pre class="para-block pre-fenced pre-fenced3" data-line="228" data-line-first="229" style="display:block"><code data-line="229">EGS = "GTACGTCGATAACTG"
+WGS = "TGATCGTCATAACGT"</code></pre>
+<p class="p noindent para-continued" data-line="233"><span data-line="233"></span><strong class="strong-star2">Optional:</strong><span data-line="233"></span> Place your alignment (the output strings from your align function, 
+written one above the other) in a comment at the very top of your 
+<span data-line="235"></span><code class="code code1">sequencing.py</code><span data-line="235"></span> file. If your code takes too long to run on these inputs, you
+can skip this part.
+</p>
+<p class="p indent" data-line="238"><span data-line="238"></span>When you<span data-line="238"></span>'<span data-line="238"></span>re all done, you should submit a file called <span data-line="238"></span><code class="code code1">sequencing.py</code><span data-line="238"></span> that
+contains: (optionally) a comment at the top of the file with your sequence 
+alignment strings, a function called <span data-line="240"></span><code class="code code1">lcs</code><span data-line="240"></span>, and a function called <span data-line="240"></span><code class="code code1">align</code><span data-line="240"></span>.
+</p></section>
+<section id="part1" class="section" data-line="244"><h2 id="sec-part-1--pyspell" class="h1 title" data-line="245" data-heading-depth="1" style="display:block"><span data-line="245"></span>Part 1: PySpell</h2>
+<p class="p noindent" data-line="247"><span data-line="247"></span><a href="https://www.gnu.org/software/ispell/" data-linkid="ispell">ISpell</a><span data-line="247"></span> is a spell-checker that makes suggestions for spelling mistakes. In
+this part of the assignment, you<span data-line="248"></span>'<span data-line="248"></span>ll implement PySpell<span data-line="248"></span>—<span data-line="248"></span>a Python program that
+does the same thing. Spell checking of this type is both useful to those of us
+hoo hav trubbel speling (or tpying) and also useful in biological databases
+where the user types in a sequence (e.g. a DNA or amino acid sequence) and the
+system reports back the near matches.
+</p>
+<p class="p indent" data-line="254"><span data-line="254"></span>How do we measure the similarity of two strings? Recall from class that the
+<span data-line="255"></span>“edit distance”<span data-line="255"></span> between two strings S1 and S2 is the minimum number of <span data-line="255"></span>“edits”<span data-line="255"></span>
+that need to be made to the strings to get them to match. An <span data-line="256"></span>“edit”<span data-line="256"></span> is either a
+replacement of a symbol with another symbol or the deletion of a symbol. For
+example, the edit distance between <span data-line="258"></span>“spam”<span data-line="258"></span> and <span data-line="258"></span>“xsam”<span data-line="258"></span> is 2. We can first delete
+the <span data-line="259"></span>“x”<span data-line="259"></span> in <span data-line="259"></span>“xsam”<span data-line="259"></span> leading to <span data-line="259"></span>“sam”<span data-line="259"></span> and then delete the <span data-line="259"></span>“p”<span data-line="259"></span> in <span data-line="259"></span>“spam”<span data-line="259"></span> to also
+make <span data-line="260"></span>“sam”<span data-line="260"></span>. That<span data-line="260"></span>'<span data-line="260"></span>s two edits, for an edit distance of 2. That<span data-line="260"></span>'<span data-line="260"></span>s the best
+possible in this case. Of course, another possible sequence of edits would have
+been to delete the <span data-line="262"></span>“s”<span data-line="262"></span> and <span data-line="262"></span>“p”<span data-line="262"></span> from <span data-line="262"></span>“spam”<span data-line="262"></span> to make <span data-line="262"></span>“am”<span data-line="262"></span> and delete the <span data-line="262"></span>“x”<span data-line="262"></span> and
+<span data-line="263"></span>“s”<span data-line="263"></span> from <span data-line="263"></span>“xsam”<span data-line="263"></span> to to make also <span data-line="263"></span>“am”<span data-line="263"></span>. That<span data-line="263"></span>'<span data-line="263"></span>s 4 edits, which is not as good as 2.
+</p>
+<aside class="aside" data-line="265">
+<p class="p noindent" data-line="266"><span data-line="266"></span>See if you can extract the use-it-or-lose-it template from the code.</p></aside>
+<p class="p noindent" data-line="268"><span data-line="268"></span>Here<span data-line="268"></span>'<span data-line="268"></span>s an <span data-line="268"></span><code class="code code1">editDistance</code><span data-line="268"></span> function that implements a (slightly cleaned-up) 
+use-it-or-lose-it solution:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-python lang-python python colorized" data-line="271" data-line-first="272" style="display:block"><code data-line="272"><span style="color:blue">def</span> editDistance(first, second)<span style="color:blue">:</span>
+  <span style="color:maroon">'''</span><span style="color:maroon">Returns the edit distance between  the strings first and second.</span><span style="color:maroon">'''</span>
+
+  <span style="color:darkgreen"># if the first string is empty, we can do len(second) deletions</span>
+  <span style="color:blue">if</span> <span style="color:blue">not</span> first<span style="color:blue">:</span>
+    <span style="color:blue">return</span> len(second)
+
+  <span style="color:darkgreen"># if the second string is empty, we can do len(first) insertions</span>
+  <span style="color:blue">elif</span> <span style="color:blue">not</span> second<span style="color:blue">:</span>
+    <span style="color:blue">return</span> len(first)
+
+  <span style="color:darkgreen"># if the first characters of each string agrees, then we don't need to</span>
+  <span style="color:darkgreen"># perform a transformation for those characters</span>
+  <span style="color:blue">elif</span> first[<span class="constant" style="color:purple">0</span>] == second[<span class="constant" style="color:purple">0</span>]<span style="color:blue">:</span>
+    <span style="color:blue">return</span> editDistance(first[<span class="constant" style="color:purple">1</span><span style="color:blue">:</span>], second[<span class="constant" style="color:purple">1</span><span style="color:blue">:</span>])
+
+  <span style="color:darkgreen"># if the first characters of the two strings are different, consider </span>
+  <span style="color:darkgreen"># the effects of performing each kind of modification on those characters;</span>
+  <span style="color:darkgreen"># choose the option that leads to the cheapest cost</span>
+  <span style="color:blue">else</span><span style="color:blue">:</span>
+    substitution <span style="color:blue">=</span> <span class="constant" style="color:purple">1</span> + editDistance(first[<span class="constant" style="color:purple">1</span><span style="color:blue">:</span>], second[<span class="constant" style="color:purple">1</span><span style="color:blue">:</span>])
+    deletion <span style="color:blue">=</span> <span class="constant" style="color:purple">1</span> + editDistance(first[<span class="constant" style="color:purple">1</span><span style="color:blue">:</span>], second)
+    insertion <span style="color:blue">=</span> <span class="constant" style="color:purple">1</span> + editDistance(first, second[<span class="constant" style="color:purple">1</span><span style="color:blue">:</span>])
+    <span style="color:blue">return</span> min(substitution, deletion, insertion)</code></pre><h3 id="sec-it-works-but-its-slow" class="h2" data-line="298" data-heading-depth="2" style="display:block"><span data-line="298"></span>It works, but it<span data-line="298"></span>'<span data-line="298"></span>s slow!</h3>
+<p class="p noindent" data-line="300"><span data-line="300"></span>Try your <span data-line="300"></span><code class="code code1">editDistance</code><span data-line="300"></span> function on a few pairs of long words. You<span data-line="300"></span>'<span data-line="300"></span>ll notice
+that it is verrrrrry slooooowwwww.
+</p>
+<aside class="aside" data-line="303">
+<p class="p noindent" data-line="304"><span data-line="304"></span>It<span data-line="304"></span>'<span data-line="304"></span>s a good idea to write the dynamic-programming template <span data-line="304"></span><em class="em-low1">before</em><span data-line="304"></span> you write
+any code.</p></aside>
+<p class="p noindent" data-line="307"><span data-line="307"></span>Re-write the function using dynamic programming. <span data-line="307"></span><strong class="strong-star2">Create a file called
+<code class="code code1">pySpell.py</code>.</strong><span data-line="308"></span> In it, implement a function called <span data-line="308"></span><code class="code code1">dynamicEditDistance</code><span data-line="308"></span>. This
+function should not be recursive; rather, it should use dynamic programming.
+</p>
+<p class="p indent" data-line="311"><span data-line="311"></span>After writing <span data-line="311"></span><code class="code code1">dynamicEditDistance</code><span data-line="311"></span>, test it to make sure that it<span data-line="311"></span>'<span data-line="311"></span>s giving the
+right answer. Here are a few more test cases:
+</p>
+<pre class="para-block pre-fenced pre-fenced3" data-line="314" data-line-first="315" style="display:block"><code data-line="315">&gt;&gt;&gt; dynamicEditDistance("antidisestablishment", "antiquities")
+13
+&gt;&gt;&gt; dynamicEditDistance("xylophone", "yellow")
+7
+&gt;&gt;&gt; dynamicEditDistance("follow", "yellow")
+2
+&gt;&gt;&gt; dynamicEditDistance("lower", "hover")
+2</code></pre><h4 id="sec-suggestions-" class="h3" data-line="325" data-heading-depth="3" style="display:block"><span data-line="325"></span>Suggestions:</h4>
+<ul class="ul list-dash compact" data-line="327">
+<li class="li ul-li list-dash-li compact-li" data-line="327"><span data-line="327"></span>You could conceive of the dynamic-programming table as a two-dimensional
+table. The rows of the table correspond to the length of s1. In other
+words, the table would have <span data-line="329"></span><code class="code code1">len(s1)</code><span data-line="329"></span> rows, numbered <span data-line="329"></span><code class="code code1">0…len(s1)-1</code><span data-line="329"></span>. The
+columns of the table correspond to the length of s2. A particular cell in the
+table has coordinate <span data-line="331"></span><code class="code code1">(row, column)</code><span data-line="331"></span>. The value in a cell is the
+edit distance required to transform a <span data-line="332"></span><code class="code code1">row</code><span data-line="332"></span>-length suffix of s1 into a 
+<span data-line="333"></span><code class="code code1">column</code><span data-line="333"></span>-length suffix of s2. 
+</li>
+<li class="li ul-li list-dash-li compact-li" data-line="334"><span data-line="334"></span>You could implement the table as a list of lists <span data-line="334"></span><em class="em-low1">or</em><span data-line="334"></span> as a dictionary 
+(where the keys are the coordinates of the table cells).
+</li>
+<li class="li ul-li list-dash-li compact-li" data-line="336"><span data-line="336"></span>This kind of dynamic programming is an extension of what we saw
+in class. It<span data-line="337"></span>'<span data-line="337"></span>s sufficiently different, though, that talking it over with
+other people in class and with the course staff (Prof. Ben / grutors) is
+probably a good idea!
+</li></ul>
+<h3 id="sec-use-dynamiceditdistance-to-implement-a-spell-checker" class="h2" data-line="341" data-heading-depth="2" style="display:block"><span data-line="341"></span>Use <span data-line="341"></span><code class="code code1">dynamicEditDistance</code><span data-line="341"></span> to implement a spell checker</h3>
+<p class="p noindent" data-line="343"><span data-line="343"></span>Your last task is to write a function called <span data-line="343"></span><code class="code code1">spellCheck</code><span data-line="343"></span> that loads in a<span data-line="343"></span>&nbsp;<a href="https://www.cs.hmc.edu/courses/2016/fall/cs42/hw/3esl.txt" data-linkid="words">large
+master list of words</a><span data-line="344"></span> and then repeatedly does the following:
+</p>
+<ol class="ol loose" data-line="346">
+<li class="li ol-li loose-li" data-line="346">
+<p data-line="346"><span data-line="346"></span>The user is shown the prompt <span data-line="346"></span><code class="code code1">spell check&gt; </code><span data-line="346"></span> and prompted to type in a word.
+</p></li>
+<li class="li ol-li loose-li" data-line="348">
+<p data-line="348"><span data-line="348"></span>If the user<span data-line="348"></span>'<span data-line="348"></span>s word is in the master list, the program reports <span data-line="348"></span><code class="code code1">"Correct"</code><span data-line="348"></span>.
+</p></li>
+<li class="li ol-li loose-li" data-line="350">
+<p data-line="350"><span data-line="350"></span>If the user<span data-line="350"></span>'<span data-line="350"></span>s word is not in the master list, the program should compute
+the edit distance between the word and every word in the master list. Then,
+the program should report the 10 most similar, in order of smallest to
+largest edit distance.
+</p></li></ol>
+
+<p class="p noindent" data-line="355"><span data-line="355"></span>The user can quit the program by pressing return when prompted for a word. The
+user should be able to run the program by typing <span data-line="356"></span><code class="code code1">python pyspell.py</code><span data-line="356"></span> at the
+command line.
+</p>
+<p class="p indent" data-line="359"><span data-line="359"></span>Here is an example of what your program will look like when running. 
+Moreover, if there are ties in the edit distance
+scores, you may break those ties arbitrarily when sorting.
+</p>
+<pre class="para-block pre-fenced pre-fenced3" data-line="363" data-line-first="364" style="display:block"><code data-line="364">python pyspell.py
+spell check&gt; spam
+Suggested alternatives:
+  scam
+  seam
+  sham
+  slam
+  spa
+  span
+  spar
+  spasm
+  spat
+  swam
+spell check&gt; groodie
+Suggested alternatives:
+  goodies
+  groove
+  groupie
+  rookie
+  Brownie
+  boogie
+  bookie
+  brood
+  brownie
+  cookie
+spell check&gt;</code></pre><h4 id="sec-requirements-and-suggestions" class="h3" data-line="392" data-heading-depth="3" style="display:block"><span data-line="392"></span>Requirements and suggestions</h4>
+<p class="p noindent" data-line="394"><span data-line="394"></span>Here are some requirements and helpful tips for implementing the various parts
+of the spell-checker:
+</p>
+<ul class="ul list-dash compact" data-line="397">
+<li class="li ul-li list-dash-li compact-li" data-line="397"><span data-line="397"></span>Your program must read in the master list of words from the provided file 
+<span data-line="398"></span><a href="https://www.cs.hmc.edu/courses/2016/fall/cs42/hw/3esl.txt" data-linkid="words"><code class="code code1">3esl.txt</code></a><span data-line="398"></span>. However, your program should be somewhat flexible about the word
+list. Define a constant called <span data-line="399"></span><code class="code code1">WORD_LIST_FILE</code><span data-line="399"></span> at the top of the file. Its
+value should be <span data-line="400"></span><code class="code code1">'3esl.txt'</code><span data-line="400"></span>, but someone could later change it to use a
+different word list. Use <span data-line="401"></span><code class="code code1">WORD_LIST_FILE</code><span data-line="401"></span> in your spell-checking code.
+</li></ul>
+
+<ul class="ul list-dash compact" data-line="404">
+<li class="li ul-li list-dash-li compact-li" data-line="404"><span data-line="404"></span>This code snippet will store all the words in your word-list file into a
+list in your Python program:
+<span data-line="406"></span><code class="code code1">wordList = open(WORD_LIST_FILE).read().split('\n')</code><span data-line="406"></span>
+</li></ul>
+
+<ul class="ul list-dash compact" data-line="409">
+<li class="li ul-li list-dash-li compact-li" data-line="409"><span data-line="409"></span>Your program will report the top 10 suggestions. However, you
+might later wish to change 10 to 12 or even 42. So, rather than having the
+number 10 hard-coded into your program, define a global variable called 
+<span data-line="412"></span><code class="code code1">HITS</code><span data-line="412"></span>. Use <span data-line="412"></span><code class="code code1">HITS</code><span data-line="412"></span> in your spell-checking code.
+</li></ul>
+
+<ul class="ul list-dash compact" data-line="415">
+<li class="li ul-li list-dash-li compact-li" data-line="415"><span data-line="415"></span>Your code should use the <span data-line="415"></span><code class="code code1">"__main__"</code><span data-line="415"></span> idiom to call the <span data-line="415"></span><code class="code code1">spellCheck</code><span data-line="415"></span>
+function when the file is run as a program.
+</li></ul>
+
+<ul class="ul list-dash compact" data-line="419">
+<li class="li ul-li list-dash-li compact-li" data-line="419"><span data-line="419"></span>You will need to find the score (edit distance) for each word in the master
+list of words. One way to do this is to construct another list that is just
+like your master list of words, except that each entry in that new list will
+be a tuple of the form (score, word). For example, the tuple <span data-line="422"></span><code class="code code1">(42, "spam")</code><span data-line="422"></span>
+would mean that the word <span data-line="423"></span><code class="code code1">"spam"</code><span data-line="423"></span> has edit distance <span data-line="423"></span><code class="code code1">42</code><span data-line="423"></span> from the word that the
+user entered. 
+</li></ul></section><!-- ~ Begin Section {id="bonus"}
+# Bonus Problem: Markov Text Generation {class="title"}
+
+**Note:** you can work on this problems only if you have copious free time!
+Although this problems is fun, it's not worth losing sleep over or
+forsaking required work in this or other classes.
+
+Your goal in this section is to write a program that is capable of "learning"
+English from examples of text and then generating new "meaningful" English
+random text all by itself! You will accomplish this goal by writing a Markov
+text generation algorithm.
+
+Here's the basic idea: English is a language with a lot of structure. Words have
+a tendency (indeed, an obligation) to appear only in certain sequences.
+Grammatical rules specify legal combinations of different parts of speech. For
+example, the phrase "The cat climbs the stairs" obeys a legal word sequence.
+"Stairs the the climbs cat", does not. Additionally, semantics (the meaning of a
+word or sentence) further limits possible word combinations. "The stairs climb
+the cat" is a perfectly legal sentence, but it doesn't make any sense and you
+are very unlikely to encounter this word ordering in practice.
+
+Even without knowing the formal rules of English, or the meaning of English
+words, we can get an idea of what word combinations are legal simply by looking
+at well-formed English text and noting the combinations of words that tend to
+occur in practice. Then, based on our observations, we could generate new
+sentences by randomly selecting words according to commonly occurring sequences
+of these words. For example, consider the following text:
+
+> "I love roses and carnations. I hope I get roses for my birthday."
+
+If we start by selecting the word "I", we notice that "I" may be followed by
+"love", "hope" and "get" with equal probability in this text. We randomly select
+one of these words to add to our sentence, e.g. "I get". We can repeat this
+process with the word "get", necessarily selecting the word "roses" as the next
+word. Continuing this process could yield the phrase "I get roses and
+carnations". Note that this is a valid English sentence, but not one that we
+have seen before. Other novel sentences we might have generated include "I love
+roses for my birthday," and "I get roses for my birthday".
+
+More formally, the process we use to generate these sentences is called a 
+*k*th-order Markov process. A *k*th-order Markov process is a process where the 
+next word depends only on the previous k words. A very special case is a 
+first-order Markov process (when *k* = 1) in which the next word depends only on
+the previous one.
+
+Implement your program in the file [`markov.py`][Markov]. 
+Your program will contain three
+components: getting input from the user, "learning" from some training data, and
+generating random text.
+
+### Getting input from the user
+
+Here are the inputs that your program must get from the user:
+
+  - Using the `__main__` idiom, your program will start automatically.
+
+
+  - Your program will begin by asking the user for the name of the training file
+  they will provide. (A training file is just a file containing some sample text.)
+
+
+  - Next, the user is asked to specify the value of *k*, the order of the Markov process.
+
+
+  - The program now asks the user how many sentences they would like to have
+    generated. The program eventually generates that number of random sentences,
+    prints them to the screen, and exits.
+
+### Learning from the training data
+
+Your program must also "learn" from the text in the training file
+
+To generate the random text: 
+
+  - The program reads in the contents of the training file as a string. It
+  splits the contents into a list of sentences, where each sentence is a list of
+  words. For the purposes of this program, only three things can end a sentence:
+  a period (`.`), and exclamation point (`!`), or a question mark (`?`). The
+  program should leave the punctuation in the sentences.
+
+
+  - The program builds a "Markov dictionary" of sequences of length *k* that appear in
+  the text. For each sequence of length k, it associates the list of all
+  words that can follow that sequence. For example, assume that we had a
+  training file with the text 
+
+  > I like spam and I like chocolate.  I like spam a lot! 
+
+  If we were using *k*=2 then the sequences of *k*=2 consecutive
+  words would be `I like`, `like spam`, `spam and`, `and I`, etc. The sequence 
+  `I like` would be a key in the dictionary and would be associated with the words
+  that follow it namely: `spam`, `chocolate`, and `spam`. Notice that `spam` appears
+  twice there. That's good! That indicates that `spam` is twice as likely as
+  chocolate to appear after the pattern `I like`.
+
+
+  
+### Generating random text
+
+Each time the program generates a random sentence, it proceeds as follows:
+
+
+  - First, it chooses the first *k* words of a random sentence from the training
+  text. This is the "starter tuple". The program prints each word in that tuple.
+
+
+  - Next, the program enters a loop. In that loop, the program uses the starter tuple as a
+  key to the Markov dictionary. The resulting value gives us a list
+  of the next possible words. The program chooses one of these at random and
+  prints that word on the same line as the starter sequence.
+
+
+  - Next, the program updates the starter tuple by removing the first word from
+  the front of that tuple and adding the most recently generated word to the end
+  of that tuple. In this way, the starter tuple keeps track of the last *k*
+  words.
+
+
+  - The program repeats in this fashion until it encounters some end-of-sentence
+  punctuation or until the starter tuple isn't in the Markov dictionary. (Careful,
+  this last bit can result in infinite loops if your training files are too small.
+  You   may wish to have a limit on how many "try agains" your program attempts.)
+
+
+  
+### Suggestions
+
+Here are some suggestions for how to implement this program
+
+
+- The file `markov.py` has a skeleton implementation. Feel free to use it or to
+delete everything that's there and implement the program from scratch.
+
+
+- The `random.choice` function may be useful.
+
+
+- For the Markov dictionary, `collections.defaultdict` might be useful.
+
+
+- You can't use a list as a dictionary key, but you can use a tuple. To turn a
+list into a tuple, use the built-in `tuple` function.
+
+
+- If you want to print something *without* print a newline, but a comma after
+the thing you want to print, like so: `print 'hi',`
+
+- The training text you want to use is up to you. The 
+[Complete Works of Shakespeare][Shakespeare] or these [IRS documents][IRS] may
+be good. 
+
+
+~ End Section -->
+</article><span data-line=""></span></div>
+
+
+
+</body></html>
